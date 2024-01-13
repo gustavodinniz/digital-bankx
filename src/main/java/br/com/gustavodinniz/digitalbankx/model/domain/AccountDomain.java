@@ -1,7 +1,10 @@
 package br.com.gustavodinniz.digitalbankx.model.domain;
 
+import br.com.gustavodinniz.digitalbankx.enumeration.AccountType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,6 +35,7 @@ public class AccountDomain {
     @Column(name = "document", unique = true, nullable = false)
     private String document;
 
-    @Column(name = "account_type")
-    private String accountType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "account_type", columnDefinition = "varchar")
+    private AccountType accountType;
 }
