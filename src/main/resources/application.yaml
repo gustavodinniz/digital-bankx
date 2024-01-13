@@ -31,27 +31,11 @@ spring:
       initialize-schema: always
 
 logging:
-  file:
-    path: .
-    name: bankx.log
   level:
     root: info
     org:
       springframework:
       web: info
-    com:
-      porto:
-        ccon: debug
-
-management:
-  endpoint:
-    health:
-      show-components: always
-  endpoints:
-    web:
-      exposure:
-        include: actuator,logfile,metrics,health,info
-      base-path: /v1/actuator
 
 cloud:
   aws:
