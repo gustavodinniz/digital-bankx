@@ -19,7 +19,7 @@ public class BankxTransactionListener {
 
     @SqsListener("${cloud.aws.sqs.queues.bankx-transactions}")
     public void processMessage(Message message) {
-        log.info("Received a new message...");
+        log.info("Received a new message: {}", message);
         try {
             log.info("Trying to serialize it...");
             S3EventDTO s3EventDTO = JsonParser.stringJsonToObject(message.body(), S3EventDTO.class);
