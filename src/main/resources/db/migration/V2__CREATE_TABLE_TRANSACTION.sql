@@ -1,6 +1,7 @@
 CREATE TABLE transaction
 (
     id                     VARCHAR(36) PRIMARY KEY,
+    transaction_id         VARCHAR(36),
     transaction_type       VARCHAR(20)    NOT NULL,
     amount                 DECIMAL(10, 2) NOT NULL,
     date_time              DATETIME,

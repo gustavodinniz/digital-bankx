@@ -27,6 +27,9 @@ public class TransactionDomain {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @Column(name = "transaction_id")
+    private String transactionId;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type", nullable = false, columnDefinition = "varchar")
     private TransactionType transactionType;
