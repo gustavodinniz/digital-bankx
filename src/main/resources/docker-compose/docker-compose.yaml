@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  localstack:
+    container_name: bankx-localstack
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+      - "4510-4559:4510-4559"
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - ./localstack-script/bucket:/tmp/localstack/bucket
+      - ./localstack-script:/etc/localstack/init/ready.d
+      - /var/run/docker.sock:/var/run/docker.sock
+  db:
+    container_name: bankx-db
+    image: mysql:8
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - bankx-db:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: bankx
+      MYSQL_ROOT_PASSWORD: root
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 500m
+
+volumes:
+  bankx-db:
