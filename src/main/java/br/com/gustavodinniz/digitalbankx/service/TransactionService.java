@@ -48,13 +48,14 @@ public class TransactionService {
         String bucket = recordDTO.getBucketName();
         String key = recordDTO.getKey();
         File localFile = downloadFile(bucket, key, localFileName);
-        executeJob(localFile);
+        executeJob(localFile, key);
     }
 
-    private void executeJob(File localFile) {
+    private void executeJob(File localFile, String key) {
         try {
             JobParameters jobParameters = new JobParametersBuilder()
                     .addString("readFilename", localFile.getName())
+                    .addString("originalFileName", key)
                     .addString("sequential", "1")
                     .addLong("initial", System.currentTimeMillis())
                     .toJobParameters();

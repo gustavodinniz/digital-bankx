@@ -7,18 +7,20 @@ import java.util.stream.IntStream;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
+import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
+import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.PathResource;
 
 import br.com.gustavodinniz.digitalbankx.batch.processor.TransactionProcessor;
 import br.com.gustavodinniz.digitalbankx.batch.reader.TransactionReader;
 import br.com.gustavodinniz.digitalbankx.batch.writer.TransactionWriter;
 import br.com.gustavodinniz.digitalbankx.model.dto.TransactionDTO;
-import br.com.gustavodinniz.digitalbankx.repository.AccountRepository;
-import br.com.gustavodinniz.digitalbankx.repository.TransactionRepository;
+import br.com.gustavodinniz.digitalbankx.model.dto.TransactionWriteDTO;
 import br.com.gustavodinniz.digitalbankx.service.TransactionHandlerFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -27,10 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class TransactionBatchConfig {
 
     private static final String CSV_DELIMITER = ",";
-
-    private final AccountRepository accountRepository;
-
-    private final TransactionRepository transactionRepository;
+    private static final String CSV_HEADER = "ID, TRANSACTION_ID, TRANSACTION_TYPE, AMOUNT, DATETIME, STATUS, SOURCE_ACCOUNT, SOURCE_ACCOUNT_DOCUMENT, DESTINATION_ACCOUNT, DESTINATION_ACCOUNT_DOCUMENT";
 
     private final TransactionHandlerFactory transactionHandlerFactory;
 
@@ -69,7 +68,17 @@ public class TransactionBatchConfig {
 
     @Bean
     @StepScope
-    public TransactionWriter transactionFileWriter() {
-        return new TransactionWriter();
+    public TransactionWriter transactionFileWriter(@Value("#{jobParameters[originalFileName]}") String originalFileName) {
+        TransactionWriter writer = new TransactionWriter();
+        writer.setResource(new FileSystemResource(originalFileName.replace(".csv", "-success.csv")));
+        DelimitedLineAggregator<TransactionWriteDTO> lineAggregator = new DelimitedLineAggregator<>();
+        lineAggregator.setDelimiter(CSV_DELIMITER);
+        BeanWrapperFieldExtractor<TransactionWriteDTO> fieldExtractor = new BeanWrapperFieldExtractor<>();
+        fieldExtractor.setNames(Arrays.stream(TransactionWriteDTO.class.getDeclaredFields()).map(Field::getName)
+                .toArray(String[]::new));
+        lineAggregator.setFieldExtractor(fieldExtractor);
+        writer.setLineAggregator(lineAggregator);
+        writer.setHeaderCallback(writerCallback -> writerCallback.write(CSV_HEADER));
+        return writer;
     }
 }

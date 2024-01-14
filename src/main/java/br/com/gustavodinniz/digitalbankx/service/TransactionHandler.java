@@ -1,12 +1,12 @@
 package br.com.gustavodinniz.digitalbankx.service;
 
 import br.com.gustavodinniz.digitalbankx.enumeration.TransactionType;
-import br.com.gustavodinniz.digitalbankx.model.domain.TransactionDomain;
 import br.com.gustavodinniz.digitalbankx.model.dto.TransactionDTO;
+import br.com.gustavodinniz.digitalbankx.model.dto.TransactionWriteDTO;
 
 public interface TransactionHandler {
 
     TransactionType getTransactionType();
 
-    TransactionDomain handleTransaction(TransactionDTO transactionDTO);
+    TransactionWriteDTO handleTransaction(TransactionDTO transactionDTO);
 }

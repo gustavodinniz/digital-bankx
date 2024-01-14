@@ -9,6 +9,7 @@ import br.com.gustavodinniz.digitalbankx.enumeration.TransactionType;
 import br.com.gustavodinniz.digitalbankx.model.domain.AccountDomain;
 import br.com.gustavodinniz.digitalbankx.model.domain.TransactionDomain;
 import br.com.gustavodinniz.digitalbankx.model.dto.TransactionDTO;
+import br.com.gustavodinniz.digitalbankx.model.dto.TransactionWriteDTO;
 import br.com.gustavodinniz.digitalbankx.repository.AccountRepository;
 import br.com.gustavodinniz.digitalbankx.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class TransferTransactionHandler implements TransactionHandler {
     }
 
     @Override
-    public TransactionDomain handleTransaction(TransactionDTO transactionDTO) {
+    public TransactionWriteDTO handleTransaction(TransactionDTO transactionDTO) {
         log.info("Handling transfer transaction: {}", transactionDTO.getTransactionId());
         log.info("Verifying accounts {} and {}.", transactionDTO.getSourceAccount(), transactionDTO.getDestinationAccount());
         Optional<AccountDomain> sourceAccountOptional = accountRepository.findByAccountNumber(transactionDTO.getSourceAccount());
@@ -48,14 +49,14 @@ public class TransferTransactionHandler implements TransactionHandler {
             transactionDomain.setStatus(TransactionStatusType.COMPLETED);
             transactionRepository.save(transactionDomain);
             log.info("Transfer transaction {} completed.", transactionDTO.getTransactionId());
-            return transactionDomain;
+            return TransactionWriteDTO.valueOf(transactionDomain);
         } else {
             log.error("Account {} or {} not found.", transactionDTO.getSourceAccount(), transactionDTO.getDestinationAccount());
             TransactionDomain transactionDomain = TransactionDomain.valueOf(transactionDTO);
             transactionDomain.setStatus(TransactionStatusType.CANCELED);
             transactionRepository.save(transactionDomain);
             log.info("Transfer transaction {} canceled.", transactionDTO.getTransactionId());
-            return transactionDomain;
+            return TransactionWriteDTO.valueOf(transactionDomain);
         }
     }
 }

@@ -9,8 +9,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import br.com.gustavodinniz.digitalbankx.batch.processor.TransactionProcessor;
 import br.com.gustavodinniz.digitalbankx.batch.reader.TransactionReader;
 import br.com.gustavodinniz.digitalbankx.batch.writer.TransactionWriter;
-import br.com.gustavodinniz.digitalbankx.model.domain.TransactionDomain;
 import br.com.gustavodinniz.digitalbankx.model.dto.TransactionDTO;
+import br.com.gustavodinniz.digitalbankx.model.dto.TransactionWriteDTO;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -29,7 +29,7 @@ public class TransactionStep {
 
     public Step getStep() {
         return new StepBuilder("TRANSACTIONS PROCESS", jobRepository)
-                .<TransactionDTO, TransactionDomain> chunk(10, transactionManager)
+                .<TransactionDTO, TransactionWriteDTO> chunk(10, transactionManager)
                 .reader(transactionReader)
                 .processor(transactionProcessor)
                 .writer(transactionWriter)

@@ -1,18 +1,13 @@
 package br.com.gustavodinniz.digitalbankx.batch.writer;
 
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.file.FlatFileItemWriter;
 
-import br.com.gustavodinniz.digitalbankx.model.domain.TransactionDomain;
+import br.com.gustavodinniz.digitalbankx.model.dto.TransactionWriteDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-public class TransactionWriter implements ItemWriter<TransactionDomain> {
+public class TransactionWriter extends FlatFileItemWriter<TransactionWriteDTO> {
 
-    @Override
-    public void write(Chunk<? extends TransactionDomain> chunk) throws RuntimeException {
-        chunk.forEach(transactionDomain -> log.info("Writing transaction: {}", transactionDomain));
-    }
 }

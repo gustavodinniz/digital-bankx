@@ -2,26 +2,26 @@ package br.com.gustavodinniz.digitalbankx.batch.processor;
 
 import org.springframework.batch.item.ItemProcessor;
 
-import br.com.gustavodinniz.digitalbankx.model.domain.TransactionDomain;
 import br.com.gustavodinniz.digitalbankx.model.dto.TransactionDTO;
+import br.com.gustavodinniz.digitalbankx.model.dto.TransactionWriteDTO;
 import br.com.gustavodinniz.digitalbankx.service.TransactionHandlerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-public class TransactionProcessor implements ItemProcessor<TransactionDTO, TransactionDomain> {
+public class TransactionProcessor implements ItemProcessor<TransactionDTO, TransactionWriteDTO> {
 
     private final TransactionHandlerFactory transactionHandlerFactory;
 
     @Override
-    public TransactionDomain process(TransactionDTO transactionDTO) {
+    public TransactionWriteDTO process(TransactionDTO transactionDTO) {
         log.info("Processing transactionDTO: {}", transactionDTO.getTransactionId());
         try {
             return transactionHandlerFactory.getTransactionType(transactionDTO.getTransactionType())
                     .handleTransaction(transactionDTO);
         } catch (Exception e) {
-            log.error("Error on handle transaction: {}", transactionDTO.getTransactionId());
+            log.info("Error on handle transaction: {}", transactionDTO.getTransactionId(), e);
             return null;
         }
     }
