@@ -57,18 +57,19 @@ do DigitalBankX, utilizando o S3 para o upload dos arquivos CSV e o SQS para aci
 - Banco de dados relacional para armazenar transações e resultados.
 - Ferramentas de monitoramento e logging para análise de desempenho.
 
-**Como testar:**
+---
 
-Faça o clone do projeto.
+**Como rodar o projeto**
 
-No diretório: `digital-bankx/src/main/resources/docker-compose` rode o comando:
+1) Faça o clone do projeto.
 
-`docker-compose up`
+2) No diretório: `digital-bankx/src/main/resources/docker-compose` rode o comando:
+   `docker-compose up`
 
-No diretório: `digital-bankx/src/main/resources/docker-compose/localstack-script/bucket` há um exemplo de arquivo a ser
-consumido, basta colocar o arquivo no bucket com o comando:
+3) No diretório: `digital-bankx/src/main/resources/docker-compose/localstack-script/bucket` há um exemplo de arquivo a
+   ser
+   consumido, basta colocar o arquivo no bucket com o
+   comando: `aws s3 cp 20240113-bankx-transactions.csv s3://bankx-transactions --endpoint-url http://localhost:4566
+   `
 
-`aws s3 cp 20240113-bankx-transactions.csv s3://bankx-transactions --endpoint-url http://localhost:4566
-`
-
-Ao colocar o arquivo no bucket, o mesmo será consumido e processado pelo Spring Batch.
+4) Ao colocar o arquivo no bucket, o mesmo será consumido e processado pelo Spring Batch.
