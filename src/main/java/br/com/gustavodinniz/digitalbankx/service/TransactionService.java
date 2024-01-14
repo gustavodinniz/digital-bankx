@@ -1,11 +1,9 @@
 package br.com.gustavodinniz.digitalbankx.service;
 
-import br.com.gustavodinniz.digitalbankx.batch.step.TransactionStep;
-import br.com.gustavodinniz.digitalbankx.model.dto.S3EventDTO;
-import br.com.gustavodinniz.digitalbankx.model.dto.S3EventRecordDTO;
-import br.com.gustavodinniz.digitalbankx.service.client.AwsS3Client;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.File;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
@@ -16,9 +14,12 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.util.Optional;
-import java.util.UUID;
+import br.com.gustavodinniz.digitalbankx.batch.step.TransactionStep;
+import br.com.gustavodinniz.digitalbankx.model.dto.S3EventDTO;
+import br.com.gustavodinniz.digitalbankx.model.dto.S3EventRecordDTO;
+import br.com.gustavodinniz.digitalbankx.service.client.AwsS3Client;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -34,7 +35,7 @@ public class TransactionService {
     private final TransactionStep transactionStep;
 
     public void processTransactions(S3EventDTO s3EventDTO) {
-        log.info("Processing transactions...");
+        log.info("Verifying if there are transactions to process...");
         Optional.ofNullable(s3EventDTO)
                 .map(S3EventDTO::getRecords)
                 .flatMap(records -> records.stream().findFirst())
@@ -42,6 +43,7 @@ public class TransactionService {
     }
 
     private void processRecord(S3EventRecordDTO recordDTO) {
+        log.info("Processing transactions...");
         String localFileName = UUID.randomUUID() + ".txt";
         String bucket = recordDTO.getBucketName();
         String key = recordDTO.getKey();
@@ -57,7 +59,7 @@ public class TransactionService {
                     .addLong("initial", System.currentTimeMillis())
                     .toJobParameters();
 
-            Job job = new JobBuilder("transaction process", jobRepository)
+            Job job = new JobBuilder("TRANSACTIONS PROCESS", jobRepository)
                     .incrementer(new RunIdIncrementer())
                     .flow(transactionStep.getStep())
                     .end()
@@ -68,6 +70,8 @@ public class TransactionService {
         } catch (Exception e) {
             log.error("Error when trying to execute job.", e);
             throw new RuntimeException(e.getMessage());
+        } finally {
+            localFile.delete();
         }
     }
 

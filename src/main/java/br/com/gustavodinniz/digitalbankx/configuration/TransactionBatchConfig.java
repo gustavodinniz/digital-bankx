@@ -1,12 +1,9 @@
 package br.com.gustavodinniz.digitalbankx.configuration;
 
-import br.com.gustavodinniz.digitalbankx.batch.processor.TransactionProcessor;
-import br.com.gustavodinniz.digitalbankx.batch.reader.TransactionReader;
-import br.com.gustavodinniz.digitalbankx.batch.writer.TransactionWriter;
-import br.com.gustavodinniz.digitalbankx.model.dto.TransactionDTO;
-import br.com.gustavodinniz.digitalbankx.repository.AccountRepository;
-import br.com.gustavodinniz.digitalbankx.repository.TransactionRepository;
-import lombok.RequiredArgsConstructor;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.stream.IntStream;
+
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
@@ -16,9 +13,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.PathResource;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.stream.IntStream;
+import br.com.gustavodinniz.digitalbankx.batch.processor.TransactionProcessor;
+import br.com.gustavodinniz.digitalbankx.batch.reader.TransactionReader;
+import br.com.gustavodinniz.digitalbankx.batch.writer.TransactionWriter;
+import br.com.gustavodinniz.digitalbankx.model.dto.TransactionDTO;
+import br.com.gustavodinniz.digitalbankx.repository.AccountRepository;
+import br.com.gustavodinniz.digitalbankx.repository.TransactionRepository;
+import br.com.gustavodinniz.digitalbankx.service.TransactionHandlerFactory;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
@@ -29,6 +31,8 @@ public class TransactionBatchConfig {
     private final AccountRepository accountRepository;
 
     private final TransactionRepository transactionRepository;
+
+    private final TransactionHandlerFactory transactionHandlerFactory;
 
     @Bean
     @StepScope
@@ -60,12 +64,12 @@ public class TransactionBatchConfig {
     @Bean
     @StepScope
     public TransactionProcessor transactionFileProcessor() {
-        return new TransactionProcessor();
+        return new TransactionProcessor(transactionHandlerFactory);
     }
 
     @Bean
     @StepScope
     public TransactionWriter transactionFileWriter() {
-        return new TransactionWriter(accountRepository, transactionRepository);
+        return new TransactionWriter();
     }
 }
