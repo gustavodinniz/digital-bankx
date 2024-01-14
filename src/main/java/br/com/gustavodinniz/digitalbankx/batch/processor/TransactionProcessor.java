@@ -15,7 +15,7 @@ public class TransactionProcessor implements ItemProcessor<TransactionDTO, Trans
     private final TransactionHandlerFactory transactionHandlerFactory;
 
     @Override
-    public TransactionDomain process(TransactionDTO transactionDTO) throws Exception {
+    public TransactionDomain process(TransactionDTO transactionDTO) {
         log.info("Processing transactionDTO: {}", transactionDTO.getTransactionId());
         try {
             return transactionHandlerFactory.getTransactionType(transactionDTO.getTransactionType())
