@@ -10,7 +10,6 @@ services:
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
-      - ./localstack-script/bucket:/tmp/localstack/bucket
       - ./localstack-script:/etc/localstack/init/ready.d
       - /var/run/docker.sock:/var/run/docker.sock
   db:
